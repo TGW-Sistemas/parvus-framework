@@ -1,0 +1,6 @@
+/.idea/*
+/vendor/*
+console.php
+composer.phar
+composer.lock
+/app/*
