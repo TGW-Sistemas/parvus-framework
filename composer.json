@@ -1,8 +1,5 @@
 {
-    "name": "adrianobnu/parvus-framework",
-    "description": "Parvus framework - A small but strong framework",
-    "keywords": ["php", "framework", "mvc"],
-    "license": "MIT",
+    "name": "tgw-sistemas/parvus-framework",
     "type": "project",
     "require": {
         "php" : ">=5.3",
