@@ -6,7 +6,7 @@
 
 		public final static function get ($prName,$prValue = NULL)
 		{
-			return $_REQUEST[$prName] != NULL ? $_REQUEST[$prName] : $prValue;
+			return $_REQUEST[$prName] != NULL ? trim(str_replace(array('<script>','</script>'),",",str_replace("'","´",$_REQUEST[$prName]))) : $prValue;
 		}
 
         /**
