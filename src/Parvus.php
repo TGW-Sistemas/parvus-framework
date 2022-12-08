@@ -116,7 +116,12 @@
 				$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 			} else {
 				$whoops->pushHandler(function ($exception, $inspector, $run) {
-					echo 'ERROR';
+                    if (file_exists(path . 'app/view/base/500.blade.php') and $this->aApp['error']['500'] != null) {
+                        $view500 = new \Parvus\View();
+                        print $view500->render($this->aApp['error']['500']);
+                    } else {
+                        echo 'Error';
+                    }
 					return Handler::DONE;
 				});
 			}
