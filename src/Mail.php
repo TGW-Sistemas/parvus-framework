@@ -19,6 +19,7 @@
 
             /** New classe mailer */
             $this->mailer = new PHPMailer();
+            $this->mailer->Timeout = 30;
 
             /** Define SMTP */
             $this->mailer->isSMTP();
