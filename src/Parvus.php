@@ -44,9 +44,15 @@
                 foreach (include(path.'app/config/Route.php') as $id => $route)
                 {
 
-                    $this->routes->add($id,new Routing\Route($route[0],
+                    $this->routes->add($id,new Routing\Route(
+                        $route[0],
                         $route[1],
-                        $route[2]
+                        $route[2],
+                        array(),
+                        '',
+                        array(),
+                        $route[3],
+                        ''
                     ));
 
                 }
