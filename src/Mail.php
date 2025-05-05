@@ -217,6 +217,18 @@
 
         }
 
+        /** Define o tipo de autenticação para OAuth 2.0 */
+        public final function setAuthType($prAuthType)
+        {
+            $this->mailer->AuthType = $prAuthType;
+        }
+
+        /** Define o Provider de Autenticação OAuth  */
+        public final function setOAuthProvider($prOAuthProvider)
+        {
+            $this->mailer->setOAuth($prOAuthProvider);
+        }
+
         /**
          * Sent the mail
          * @param bool $prForceSend
