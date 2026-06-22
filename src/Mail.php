@@ -19,11 +19,15 @@
 
             /** New classe mailer */
             $this->mailer = new PHPMailer();
-            $this->mailer->Timeout = 30; // abertura da conexao TCP
+            $this->mailer->Timeout = 30; // tempo limite para abertura da conexao TCP (segundos)
 
             /** Define SMTP */
             $this->mailer->isSMTP();
             $this->mailer->isHTML(true);
+
+            /** Tempo limite de resposta do servidor SMTP por comando (segundos).
+             *  Propriedade pertencente a instancia SMTP, nao exposta diretamente pelo PHPMailer. */
+            $this->mailer->getSMTPInstance()->Timelimit = 30;
         }
 
 				/**
