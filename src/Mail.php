@@ -17,9 +17,15 @@
             /** Read the config */
             $this->aConfig = include(path.'app/config/Mail.php');
 
+            /** Garante teto de timeout para leituras de socket nao cobertas pelo PHPMailer (ex.: Windows) */
+            ini_set('default_socket_timeout', 30);
+
             /** New classe mailer */
             $this->mailer = new PHPMailer();
-            $this->mailer->Timeout = 30;
+            $this->mailer->Timeout = 30; // abertura da conexao TCP
+
+            /** Timelimit pertence a instancia SMTP (nao a PHPMailer); o smtpConnect reaproveita este objeto */
+            $this->mailer->getSMTPInstance()->Timelimit = 30; // janela de cada leitura durante a conversa SMTP
 
             /** Define SMTP */
             $this->mailer->isSMTP();
@@ -249,7 +255,7 @@
 
             /** Config the connection with the server */
             $this->mailer->SMTPAuth     = true;
-            $this->mailer->Host         = gethostbyname($this->aConfig['host']);
+            $this->mailer->Host         = $this->aConfig['host']; // resolucao de DNS feita pelo PHPMailer, sujeita ao Timeout
             $this->mailer->Password     = $this->aConfig['password'];
             $this->mailer->Username     = $this->aConfig['user'];
             $this->mailer->Port         = $this->aConfig['port'];
