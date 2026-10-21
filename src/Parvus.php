@@ -46,12 +46,12 @@
 
                     $this->routes->add($id,new Routing\Route(
                         $route[0],
-                        $route[1],
-                        $route[2],
+                        $route[1] ?? array(),
+                        $route[2] ?? array(),
                         array(),
                         '',
                         array(),
-                        $route[3],
+                        $route[3] ?? array(),
                         ''
                     ));
 
@@ -89,10 +89,13 @@
             }
 
             /** Add the IP to trusted proxies */
-            Request::setTrustedProxies(array($this->request->server->get('REMOTE_ADDR')));
+            Request::setTrustedProxies(
+                array_filter(array($this->request->server->get('REMOTE_ADDR'))),
+                Request::HEADER_X_FORWARDED_FOR | Request::HEADER_X_FORWARDED_HOST | Request::HEADER_X_FORWARDED_PORT | Request::HEADER_X_FORWARDED_PROTO
+            );
 
             /** Define the base URL */
-			$URL = $this->request->getScheme().'://'.$_SERVER['SERVER_NAME'].$this->request->getBaseUrl();
+			$URL = $this->request->getScheme().'://'.($_SERVER['SERVER_NAME'] ?? 'localhost').$this->request->getBaseUrl();
 
 			if ($this->request->getPort() != 80)
             {
@@ -118,11 +121,11 @@
 			
 			/** Init Whoops */
 			$whoops = new \Whoops\Run;
-			if (environment !== 'production' or $_SERVER['SERVER_NAME'] === 'batch.tgwapp.com.br') {
+			if (environment !== 'production' or ($_SERVER['SERVER_NAME'] ?? NULL) === 'batch.tgwapp.com.br') {
 				$whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
 			} else {
 				$whoops->pushHandler(function ($exception, $inspector, $run) {
-                    if (file_exists(path . 'app/view/base/500.blade.php') and $this->aApp['error']['500'] != null) {
+                    if (file_exists(path . 'app/view/base/500.blade.php') and ($this->aApp['error']['500'] ?? null) != null) {
                         $view500 = new \Parvus\View();
                         print $view500->render($this->aApp['error']['500']);
                     } else {
@@ -154,11 +157,11 @@
         /**
          * Define the environment
          */
-        private final function environment ()
+        private function environment ()
         {
 
 			/** When the server name is null and not have ssh_cliente, is local */
-			if ($_SERVER['SERVER_NAME'] == NULL && $_SERVER['SSH_CLIENT'] == NULL)
+			if (($_SERVER['SERVER_NAME'] ?? NULL) == NULL && ($_SERVER['SSH_CLIENT'] ?? NULL) == NULL)
 			{
 				$_SERVER['SERVER_NAME'] = 'localhost';
 			}
@@ -169,7 +172,7 @@
             {
                 foreach ($aValue as $value)
                 {
-                    if ($_SERVER['SERVER_NAME'] == $value)
+                    if (($_SERVER['SERVER_NAME'] ?? NULL) == $value)
                     {
                         $this->environment = $environment;
                     }
@@ -184,7 +187,7 @@
          * Init the connection with database
          * @param null $prName
          */
-        private final function database ($prName = NULL)
+        private function database ($prName = NULL)
         {
 
             if(isset($this->environment))
@@ -213,7 +216,7 @@
                     {
 
                         /** If the connection field is null, use the default value */
-                        if ($config[$field] == NULL && $aDefault[$field] != NULL)
+                        if (($config[$field] ?? NULL) == NULL && ($aDefault[$field] ?? NULL) != NULL)
                         {
 
                             $config[$field] = $aDefault[$field];
@@ -279,7 +282,7 @@
 			}
 
             $namespaceController = ucfirst(Text::camelCase($namespace)).'\\'.ucfirst(Text::camelCase($controller));
-            $method 	         = 'action'.($_SERVER['REQUEST_METHOD'] == 'POST' ? 'Post' : 'Get').Text::camelCase($method,true);
+            $method 	         = 'action'.(($_SERVER['REQUEST_METHOD'] ?? NULL) == 'POST' ? 'Post' : 'Get').Text::camelCase($method,true);
 
             /** if have custom route controller */
             if ($this->controller != NULL)
@@ -309,7 +312,7 @@
             }
 
             /** If has 404, and controller and method for error, call the function */
-            if ($has404 && $this->aApp['error']['controller'] != NULL && $this->aApp['error']['method'] != NULL)
+            if ($has404 && ($this->aApp['error']['controller'] ?? NULL) != NULL && ($this->aApp['error']['method'] ?? NULL) != NULL)
             {
 
                 $class404  = $this->aApp['error']['controller'];
@@ -318,7 +321,7 @@
                 if (!class_exists($class404) || !method_exists($class404,$method404))
                 {
 
-                    trigger_error('404 Error Class Not Found',E_CORE_ERROR);
+                    throw new \RuntimeException('404 Error Class Not Found');
 
                 }
 
@@ -348,10 +351,13 @@
         $aArray = include (path.'app/config/App.php');
 
         /** Add the libs folders of app */
-        foreach ($aArray['folder']['lib'] as $folder)
+        foreach ($aArray['folder']['lib'] ?? array() as $folder)
         {
             array_push($aDirectory,'app/'.$folder);
         }
+
+        $aName  = explode('/',str_replace('\\','/',$prName));
+        $prName = array_pop($aName);
 
         foreach ($aDirectory as $directory)
         {
@@ -360,8 +366,6 @@
             {
                 $directory .= '/';
             }
-
-            $prName = array_pop(explode('/',str_replace('\\','/',$prName)));
 
             if (file_exists(path.$directory.$prName.'.php'))
             {

@@ -10,7 +10,8 @@
 	function ruleOf3 ($prBaseValue = 0,$prFinalValue = 0, $prDecimal = 2, $prLabelIfZero = NULL, $prSuffix = NULL)
 	{
 
-		$value = (($prFinalValue * 100) / $prBaseValue);
+		/** PHP 8 throws DivisionByZeroError */
+		$value = $prBaseValue != 0 ? (($prFinalValue * 100) / $prBaseValue) : 0;
 
 		if ($value <= 0 && $prLabelIfZero != NULL)
 		{

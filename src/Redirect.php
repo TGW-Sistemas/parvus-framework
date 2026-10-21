@@ -38,7 +38,7 @@
 		public final static function back ()
 		{
 			
-			header('location: '.$_SERVER['HTTP_REFERER']);
+			header('location: '.($_SERVER['HTTP_REFERER'] ?? url));
 			exit;
 			
 		}

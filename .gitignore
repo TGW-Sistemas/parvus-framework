@@ -1,0 +1,19 @@
+# Dependências do Composer
+/vendor/
+
+# Biblioteca: o lock é definido pelo projeto que a utiliza
+composer.lock
+
+# IDEs e editores
+.idea/
+.vscode/
+*.swp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testes e ferramentas
+.phpunit.result.cache
+/cache/

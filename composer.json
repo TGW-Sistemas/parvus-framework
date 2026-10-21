@@ -2,13 +2,14 @@
     "name": "tgw-sistemas/parvus-framework",
     "type": "project",
     "require": {
-        "php" : ">=5.3",
-        "philo/laravel-blade": "2.*",
-        "illuminate/database": "*",
-        "phpmailer/phpmailer": "*",
-        "symfony/http-foundation" : "2.6.*",
-        "filp/whoops": "^2.1",
-        "symfony/routing" : "3.1.*"
+        "php" : "^8.4",
+        "illuminate/database": "^13.0",
+        "illuminate/events": "^13.0",
+        "illuminate/view": "^13.0",
+        "phpmailer/phpmailer": "^7.1",
+        "symfony/http-foundation" : "^8.1",
+        "filp/whoops": "^2.18",
+        "symfony/routing" : "^8.1"
     },
     "autoload": {
     	"files": [
@@ -26,9 +27,6 @@
     },
     "minimum-stability": "stable",
     "config": {
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "kylekatarnls/update-helper": true
-        }
+        "preferred-install": "dist"
     }
 }

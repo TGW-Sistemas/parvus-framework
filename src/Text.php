@@ -13,6 +13,13 @@
 		public final static function camelCase ($prString, $prFirstUpper = false)
 		{
 
+			if ($prString === NULL || $prString === '')
+			{
+
+				return '';
+
+			}
+
 			if( $prFirstUpper == true )
 			{
 

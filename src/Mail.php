@@ -269,7 +269,7 @@
             );
 
             /** TLS ou SSL */
-            if ($this->aConfig['SMTPSecure'] != NULL)
+            if (($this->aConfig['SMTPSecure'] ?? NULL) != NULL)
             {
 
                 $this->mailer->SMTPSecure = mb_strtolower($this->aConfig['SMTPSecure'],'UTF-8');
@@ -284,7 +284,7 @@
             $view = new \Parvus\View();
 
             /** If is not array */
-            if ($this->aConfig['view-array'] == NULL)
+            if (($this->aConfig['view-array'] ?? NULL) == NULL)
             {
 
                 $this->aConfig['view-array'] = array();

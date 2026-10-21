@@ -27,7 +27,7 @@
 
                 static::getConfig();
 
-                if (static::$config['database'] != NULL)
+                if ((static::$config['database'] ?? NULL) != NULL)
                 {
 
                     $modelName = '\\Model\\'.static::$config['database']['model'];
@@ -64,10 +64,10 @@
                 static::$aLanguage = $aArray;
             }
 
-            if (static::$config['database'] != NULL)
+            if ((static::$config['database'] ?? NULL) != NULL)
             {
 
-                $aArray = $aArray[$prText];
+                $aArray = $aArray[$prText] ?? NULL;
 
             }
             else
@@ -77,7 +77,7 @@
                 foreach (explode('.',$prText) as $label)
                 {
 
-                    $aArray = $aArray[$label];
+                    $aArray = is_array($aArray) ? ($aArray[$label] ?? NULL) : NULL;
 
                 }
 
@@ -94,10 +94,10 @@
             }
 
             /** Replace the macros strings by value */
-            foreach ($prArray as $label => $value)
+            foreach ((array) $prArray as $label => $value)
             {
 
-                if ($value == NULL || strlen($value) == 0)
+                if ($value == NULL || strlen((string) $value) == 0)
                 {
 
                     continue;
@@ -137,13 +137,13 @@
         {
 
             /** If not has defined the locale */
-            if (static::$locale == NULL && $_SESSION['parvus-locale'] == NULL)
+            if (static::$locale == NULL && ($_SESSION['parvus-locale'] ?? NULL) == NULL)
             {
 
                 static::getConfig();
 
                 /** If the default locale not exist */
-                if (static::$config['default'] == NULL)
+                if ((static::$config['default'] ?? NULL) == NULL)
                 {
 
                     throw new \RuntimeException('Default language not found in app/config/Language.php',E_ERROR);
@@ -166,7 +166,7 @@
         /**
          * Load the config
          */
-        private final static function getConfig ()
+        private static function getConfig ()
         {
             
             if (static::$config != NULL)

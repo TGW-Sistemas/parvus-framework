@@ -6,7 +6,7 @@
 
 		public final static function get ($prName,$prValue = NULL)
 		{
-			return $_REQUEST[$prName] != NULL ? str_replace(array("<script>","</script>","'"),array("","","´"),$_REQUEST[$prName]) : $prValue;
+			return ($_REQUEST[$prName] ?? NULL) != NULL ? str_replace(array("<script>","</script>","'"),array("","","´"),$_REQUEST[$prName]) : $prValue;
 		}
 
         /**
@@ -17,7 +17,9 @@
 		public final static function file ($prName,$prMultiple = false)
 		{
 
-            if ($_FILES[$prName]['name'][0] == NULL)
+            $name = $_FILES[$prName]['name'] ?? NULL;
+
+            if ((is_array($name) ? ($name[0] ?? NULL) : $name) == NULL)
             {
 
                 return false;
@@ -26,7 +28,7 @@
 
             $aItem = array();
 
-            foreach (range(0,sizeof($_FILES[$prName]['name']) - 1) as $x)
+            foreach (range(0,count((array) $name) - 1) as $x)
             {
 
                 foreach (array('name','type','tmp_name','error','size') as $label)
@@ -59,7 +61,7 @@
                 );
 
                 /** Se for uma imagem */
-                if (exif_imagetype($aInfo['tmp_name']) !== false)
+                if ($aInfo['tmp_name'] != NULL && is_file($aInfo['tmp_name']) && exif_imagetype($aInfo['tmp_name']) !== false)
                 {
 
                     /** Recuper as dimensções */

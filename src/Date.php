@@ -43,13 +43,14 @@
 		 * @param $prAction string Action (add,sub)
 		 * @return string
 		 */
-		private static final function addSub ($prDate, $prQuantity, $prType , $prFormat, $prAction)
+		private static function addSub ($prDate, $prQuantity, $prType , $prFormat, $prAction)
 		{
 
 			$time		= strtotime($prDate != NULL ? $prDate : date('Y-m-d'));
-			$day 		= date('d',$time);
-			$month 		= date('m',$time);
-			$year 		= date('Y',$time);
+			$day 		= (int) date('d',$time);
+			$month 		= (int) date('m',$time);
+			$year 		= (int) date('Y',$time);
+			$prQuantity = (int) $prQuantity;
 			$prAction 	= mb_strtolower($prAction,'UTF-8');
 
 			switch (mb_strtolower($prType,'UTF-8'))
@@ -131,7 +132,7 @@
 
             $format = 'd/m/Y';
 
-            if (strpos($prDate, ':') !== false)
+            if (strpos((string) $prDate, ':') !== false)
             {
 
                 $format .= ' H:i';
@@ -152,7 +153,7 @@
 
             $format = 'Y-m-d';
 
-            if (strpos($prDate, ':') !== false)
+            if (strpos((string) $prDate, ':') !== false)
             {
 
                 $format .= ' H:i:s';

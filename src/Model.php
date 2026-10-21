@@ -6,11 +6,8 @@
         protected $primaryKey = 'id';
         public $timestamps = false;
 
-        public function __construct()
+        public function __construct(array $attributes = array())
         {
-
-            parent::__construct();
-            parent::boot();
 
             /** Se não tem tabela, recupera pelo nome da classe */
             if ($this->table == NULL)
@@ -20,14 +17,24 @@
 
             }
 
-            /** When save, remove NULL fields */
+            parent::__construct($attributes);
+
+        }
+
+        /**
+         * Register the model events (once per class)
+         */
+        protected static function booted()
+        {
+
+            /** When save, convert empty fields to NULL */
             static::saving(function($model)
             {
 
-                foreach ($model->toArray() as $name => $value)
+                foreach ($model->getAttributes() as $name => $value)
                 {
 
-                    if ((string) $value == NULL)
+                    if ($value !== NULL && is_scalar($value) && (string) $value === '')
                     {
 
                         $model->{$name} = null;
