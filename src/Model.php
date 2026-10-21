@@ -22,6 +22,18 @@
         }
 
         /**
+         * Keep the Illuminate 4.2 date format on toArray()/toJSON() (13 uses ISO-8601)
+         * @param \DateTimeInterface $date
+         * @return string
+         */
+        protected function serializeDate(\DateTimeInterface $date)
+        {
+
+            return $date->format('Y-m-d H:i:s');
+
+        }
+
+        /**
          * Register the model events (once per class)
          */
         protected static function booted()

@@ -204,6 +204,17 @@
                 /** Add the driver to the connection configuration */
                 $aDefault['driver'] = $driver;
 
+                /** Connections with the query builder compatible with Illuminate 4.2 */
+                \Illuminate\Database\Connection::resolverFor('mysql', function ($connection, $database, $prefix, $config)
+                {
+                    return new \Parvus\Database\MySqlConnection($connection, $database, $prefix, $config);
+                });
+
+                \Illuminate\Database\Connection::resolverFor('sqlite', function ($connection, $database, $prefix, $config)
+                {
+                    return new \Parvus\Database\SQLiteConnection($connection, $database, $prefix, $config);
+                });
+
                 /** Init the database manager */
                 $database = new \Illuminate\Database\Capsule\Manager();
 
