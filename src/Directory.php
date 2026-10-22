@@ -1,41 +1,67 @@
 <?php
-	namespace Parvus;
 
-	class Directory
-	{
+namespace Parvus;
 
-        /**
-         * Creates a directory
-         * @param string|array $prDirectory
-         * @param int $prPermission
-         */
-        public final static function create ($prDirectory,$prPermission = 0775)
-        {
+class Directory
+{
 
-            if (!is_array ($prDirectory))
-            {
-                $prDirectory = array($prDirectory);
+    /**
+     * Creates a directory
+     * @param string|array $prDirectory
+     * @param int $prPermission
+     */
+    public final static function create($prDirectory, $prPermission = 0775)
+    {
+
+        if (!is_array($prDirectory)) {
+            $prDirectory = array($prDirectory);
+        }
+
+        foreach ($prDirectory as $directoryTMP) {
+
+            $tmp = NULL;
+
+            foreach (explode('/', $directoryTMP) as $subdirectory) {
+
+                $tmp .= $subdirectory . '/';
+
+                if (!is_dir($tmp)) {
+                    mkdir($tmp, $prPermission, true);
+                }
+
+                if (strpos(PHP_OS, 'WIN') === false) {
+                    chmod($tmp, $prPermission);
+                }
+
             }
 
-            foreach ($prDirectory as $directoryTMP)
-            {
+        }
 
-                $tmp = NULL;
+    }
 
-                foreach (explode('/',$directoryTMP) as $subdirectory)
-                {
+    /**
+     * Copy a directory recursive
+     * @param $prOriginal
+     * @param $prNew
+     */
+    public final static function copy($prOriginal, $prNew)
+    {
 
-                    $tmp .= $subdirectory.'/';
+        $directory = opendir($prOriginal);
 
-                    if (!is_dir($tmp))
-                    {
-                        mkdir($tmp,$prPermission,true);
-                    }
+        @mkdir($prNew);
 
-                    if (strpos(PHP_OS,'WIN') === false)
-                    {
-                        chmod($tmp,$prPermission);
-                    }
+        while (false !== ($file = readdir($directory))) {
+
+            if (($file != '.') && ($file != '..')) {
+
+                if (is_dir($prOriginal . '/' . $file)) {
+
+                    self::copy($prOriginal . '/' . $file, $prNew . '/' . $file);
+
+                } else {
+
+                    copy($prOriginal . '/' . $file, $prNew . '/' . $file);
 
                 }
 
@@ -43,43 +69,8 @@
 
         }
 
-        /**
-         * Copy a directory recursive
-         * @param $prOriginal
-         * @param $prNew
-         */
-        public final static function copy ($prOriginal,$prNew)
-        {
+        closedir($directory);
 
-            $directory = opendir($prOriginal);
+    }
 
-            @mkdir($prNew);
-
-            while(false !== ($file = readdir($directory)))
-            {
-
-                if (($file != '.') && ($file != '..'))
-                {
-
-                    if (is_dir($prOriginal.'/'.$file))
-                    {
-
-                        self::copy($prOriginal.'/'.$file,$prNew.'/'.$file);
-
-                    }
-                    else
-                    {
-
-                        copy($prOriginal.'/'.$file,$prNew.'/'.$file);
-
-                    }
-
-                }
-
-            }
-
-            closedir($directory);
-
-        }
-
-	}
+}

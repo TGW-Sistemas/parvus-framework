@@ -246,6 +246,22 @@
                 $database->setAsGlobal();
                 $database->bootEloquent();
 
+                /** lists() was removed after Illuminate 4.2 (returns a plain array, like pluck()->all()) */
+                \Illuminate\Database\Query\Builder::macro('lists', function ($column, $key = null)
+                {
+                    return $this->pluck($column, $key)->all();
+                });
+
+                \Illuminate\Database\Eloquent\Builder::macro('lists', function ($column, $key = null)
+                {
+                    return $this->pluck($column, $key)->all();
+                });
+
+                \Illuminate\Support\Collection::macro('lists', function ($value, $key = null)
+                {
+                    return $this->pluck($value, $key)->all();
+                });
+
             }
 
         }

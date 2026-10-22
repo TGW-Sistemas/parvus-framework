@@ -1,88 +1,83 @@
 <?php
-	namespace Parvus;
 
-	class Input
-	{
+namespace Parvus;
 
-		public final static function get ($prName,$prValue = NULL)
-		{
-			return ($_REQUEST[$prName] ?? NULL) != NULL ? str_replace(array("<script>","</script>","'"),array("","","´"),$_REQUEST[$prName]) : $prValue;
-		}
+class Input
+{
 
-        /**
-         * @param $prName
-         * @param bool $prMultiple
-         * @return array|bool|mixed
-         */
-		public final static function file ($prName,$prMultiple = false)
-		{
+    public final static function get($prName, $prValue = NULL)
+    {
+        return ($_REQUEST[$prName] ?? NULL) != NULL ? str_replace(array("<script>", "</script>", "'"), array("", "", "´"), $_REQUEST[$prName]) : $prValue;
+    }
 
-            $name = $_FILES[$prName]['name'] ?? NULL;
+    /**
+     * @param $prName
+     * @param bool $prMultiple
+     * @return array|bool|mixed
+     */
+    public final static function file($prName, $prMultiple = false)
+    {
 
-            if ((is_array($name) ? ($name[0] ?? NULL) : $name) == NULL)
-            {
+        $name = $_FILES[$prName]['name'] ?? NULL;
 
-                return false;
+        if ((is_array($name) ? ($name[0] ?? NULL) : $name) == NULL) {
+
+            return false;
+
+        }
+
+        $aItem = array();
+
+        foreach (range(0, count((array) $name) - 1) as $x) {
+
+            foreach (array('name', 'type', 'tmp_name', 'error', 'size') as $label) {
+
+                $aItem[$x][$label] = is_array($_FILES[$prName][$label]) ? $_FILES[$prName][$label][$x] : $_FILES[$prName][$label];
 
             }
 
-            $aItem = array();
+        }
 
-            foreach (range(0,count((array) $name) - 1) as $x)
-            {
+        foreach ($aItem as $x => $aInfo) {
 
-                foreach (array('name','type','tmp_name','error','size') as $label)
-                {
+            /**
+             * Get the extension of the file
+             */
+            $aItem[$x]['extension'] = mb_strtolower(pathinfo($aInfo['name'], PATHINFO_EXTENSION), 'UTF-8');
 
-                    $aItem[$x][$label] = is_array($_FILES[$prName][$label]) ? $_FILES[$prName][$label][$x] : $_FILES[$prName][$label];
+            /**
+             * Convert the size
+             */
+            $size = $aInfo['size'];
+
+            $aItem[$x]['size'] = array(
+                'byte' => number_format($size, 2, '.', ''),
+                'kilobyte' => number_format($size / 1024, 2, '.', ''),
+                'megabyte' => number_format($size / 1048576, 2, '.', ''),
+                'gigabyte' => number_format($size / 1073741824, 2, '.', '')
+            );
+
+            /** Se for uma imagem */
+            if ($aInfo['tmp_name'] != NULL && is_file($aInfo['tmp_name']) && exif_imagetype($aInfo['tmp_name']) !== false) {
+
+                /** Recuper as dimensções */
+                $aSize = getimagesize($aInfo['tmp_name']);
+
+                if ($aSize) {
+
+                    /** Incrementa o array com as dimensões */
+                    $aItem[$x]['dimension'] = array(
+                        'width' => $aSize[0],
+                        'height' => $aSize[1]
+                    );
 
                 }
 
             }
 
-            foreach ($aItem as $x => $aInfo)
-            {
+        }
 
-                /**
-                 * Get the extension of the file
-                 */
-                $aItem[$x]['extension'] = mb_strtolower(pathinfo($aInfo['name'], PATHINFO_EXTENSION),'UTF-8');
+        return sizeof($aItem) > 1 || $prMultiple ? $aItem : $aItem[0];
+    }
 
-                /**
-                 * Convert the size
-                 */
-                $size = $aInfo['size'];
-
-                $aItem[$x]['size'] = array (
-                    'byte'	   => number_format($size, 2,'.',''),
-                    'kilobyte' => number_format($size / 1024, 2,'.',''),
-                    'megabyte' => number_format($size / 1048576, 2,'.',''),
-                    'gigabyte' => number_format($size / 1073741824, 2,'.','')
-                );
-
-                /** Se for uma imagem */
-                if ($aInfo['tmp_name'] != NULL && is_file($aInfo['tmp_name']) && exif_imagetype($aInfo['tmp_name']) !== false)
-                {
-
-                    /** Recuper as dimensções */
-                    $aSize = getimagesize ($aInfo['tmp_name']);
-
-                    if ($aSize)
-                    {
-
-                        /** Incrementa o array com as dimensões */
-                        $aItem[$x]['dimension'] = array (
-                            'width'     => $aSize[0],
-                            'height'    => $aSize[1]
-                        );
-
-                    }
-
-                }
-
-            }
-
-			return sizeof($aItem) > 1 || $prMultiple ? $aItem : $aItem[0];
-		}
-
-	}
+}

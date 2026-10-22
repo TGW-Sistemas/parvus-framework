@@ -1,9 +1,10 @@
 <?php
-    namespace Parvus\Database;
 
-    class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
-    {
+namespace Parvus\Database;
 
-        use LegacyQuery;
+class SQLiteConnection extends \Illuminate\Database\SQLiteConnection
+{
 
-    }
+    use LegacyQuery;
+
+}

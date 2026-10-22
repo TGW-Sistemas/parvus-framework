@@ -1,94 +1,84 @@
 <?php
-	namespace Parvus;
 
-	class Database extends Parvus
+namespace Parvus;
+
+class Database extends Parvus
+{
+
+	private $args;
+
+	/**
+	 * Save the args
+	 * @param $args
+	 */
+	public function __construct($args)
+	{
+		parent::__construct();
+
+		$this->args = $args;
+
+	}
+
+	/**
+	 * Show help
+	 */
+	private function help()
 	{
 
-		private $args;
+		echo "Help: php " . $this->args[0] . " migration\n";
 
-		/**
-		 * Save the args
-		 * @param $args
-		 */
-		public function __construct($args)
-		{
-			parent::__construct();
+	}
 
-			$this->args = $args;
+	/**
+	 * Run the classe
+	 */
+	public function run()
+	{
 
-		}
+		if (count($this->args) <= 1) {
+			$this->help();
+		} else {
 
-		/**
-		 * Show help
-		 */
-		private function help()
-		{
+			switch ($this->args[1]) {
 
-			echo "Help: php ".$this->args[0]." migration\n";
+				case "migration": {
+					$this->migration();
 
-		}
-
-		/**
-		 * Run the classe
-		 */
-		public function run()
-		{
-
-			if (count($this->args) <= 1)
-			{
-				$this->help();
-			}
-			else
-			{
-
-				switch ($this->args[1])
-				{
-
-					case "migration" :
-					{
-						$this->migration();
-
-						break;
-					}
-
-					case "help"		:
-					case "--help"	:
-					{
-						$this->help();
-						break;
-					}
-
+					break;
 				}
-			}
 
+				case "help":
+				case "--help": {
+					$this->help();
+					break;
+				}
+
+			}
 		}
 
-		/**
-		 * Execute migrations files
-		 */
-		private function migration()
-		{
+	}
 
-			$aFile = glob(path.'app/database/migration/*.php');
+	/**
+	 * Execute migrations files
+	 */
+	private function migration()
+	{
 
-			foreach ($aFile as $file)
-			{
+		$aFile = glob(path . 'app/database/migration/*.php');
 
-				include($file);
+		foreach ($aFile as $file) {
 
-				$class = basename($file, '.php');
+			include($file);
 
-				if (class_exists($class))
-				{
+			$class = basename($file, '.php');
 
-					$migration = new $class();
+			if (class_exists($class)) {
 
-					if (method_exists($migration,'run'))
-					{
+				$migration = new $class();
 
-						$migration->run();
+				if (method_exists($migration, 'run')) {
 
-					}
+					$migration->run();
 
 				}
 
@@ -97,3 +87,5 @@
 		}
 
 	}
+
+}
