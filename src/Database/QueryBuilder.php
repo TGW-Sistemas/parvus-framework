@@ -8,6 +8,22 @@ namespace Parvus\Database;
 class QueryBuilder extends \Illuminate\Database\Query\Builder
 {
 
+    use LegacyOperators;
+
+    /**
+     * Joins também com os operadores do 4.2 (DB::raw('='), DB::raw('IN'))
+     * @param \Illuminate\Database\Query\Builder $parentQuery
+     * @param string $type
+     * @param string $table
+     * @return JoinClause
+     */
+    protected function newJoinClause(\Illuminate\Database\Query\Builder $parentQuery, $type, $table)
+    {
+
+        return new JoinClause($parentQuery, $type, $table);
+
+    }
+
     /**
      * No 4.2, qualquer direção diferente de "asc" (inclusive NULL ou '') virava "desc".
      * No 13, uma direção inválida lança InvalidArgumentException.
