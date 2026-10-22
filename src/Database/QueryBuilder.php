@@ -29,6 +29,30 @@ class QueryBuilder extends \Illuminate\Database\Query\Builder
     }
 
     /**
+     * No 4.2, get() retornava um array; no 13 retorna uma Collection.
+     * Mantém o array para o código da aplicação e a Collection para o próprio Illuminate
+     * (Eloquent, first(), chunk(), ...), que depende dela.
+     * @param array|string $columns
+     * @return array|\Illuminate\Support\Collection
+     */
+    public function get($columns = ['*'])
+    {
+
+        $result = parent::get($columns);
+
+        $caller = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'] ?? '';
+
+        if (stripos(str_replace('\\', '/', $caller), '/illuminate/') !== false) {
+
+            return $result;
+
+        }
+
+        return $result->all();
+
+    }
+
+    /**
      * No 4.2, o limite só era aplicado quando maior que zero.
      * No 13, limit(0) ou limit('') gera "LIMIT 0" e não retorna registros.
      * @param $value
