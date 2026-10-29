@@ -47,6 +47,7 @@ class QueryBuilder extends \Illuminate\Database\Query\Builder
     /**
      * No 4.2, whereIn(col, null) gerava "0 = 1" (count(null) era 0).
      * No 13, count(null) lança TypeError. whereNotIn/orWhereIn/orWhereNotIn passam por aqui.
+     * Um valor escalar (ex.: whereIn('id', 5)) vira um array de um item.
      * @param $column
      * @param mixed $values
      * @param string $boolean
@@ -56,7 +57,30 @@ class QueryBuilder extends \Illuminate\Database\Query\Builder
     public function whereIn($column, $values, $boolean = 'and', $not = false)
     {
 
-        return parent::whereIn($column, $values ?? [], $boolean, $not);
+        if ($values === null) {
+
+            $values = [];
+
+        } elseif (is_scalar($values)) {
+
+            $values = [$values];
+
+        }
+
+        return parent::whereIn($column, $values, $boolean, $not);
+
+    }
+
+    /**
+     * lists() do 4.2 (removido no Illuminate 5.3, virou pluck()), retornando array
+     * @param string $column
+     * @param string|null $key
+     * @return array
+     */
+    public function lists($column, $key = null)
+    {
+
+        return $this->pluck($column, $key)->all();
 
     }
 
