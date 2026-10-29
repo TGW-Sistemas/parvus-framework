@@ -45,6 +45,22 @@ class QueryBuilder extends \Illuminate\Database\Query\Builder
     }
 
     /**
+     * No 4.2, whereIn(col, null) gerava "0 = 1" (count(null) era 0).
+     * No 13, count(null) lança TypeError. whereNotIn/orWhereIn/orWhereNotIn passam por aqui.
+     * @param $column
+     * @param mixed $values
+     * @param string $boolean
+     * @param bool $not
+     * @return $this
+     */
+    public function whereIn($column, $values, $boolean = 'and', $not = false)
+    {
+
+        return parent::whereIn($column, $values ?? [], $boolean, $not);
+
+    }
+
+    /**
      * No 4.2, get() retornava um array; no 13 retorna uma Collection.
      * Mantém o array para o código da aplicação e a Collection para o próprio Illuminate
      * (Eloquent, first(), chunk(), ...), que depende dela.
